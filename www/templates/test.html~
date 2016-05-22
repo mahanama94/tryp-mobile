@@ -1,0 +1,8 @@
+<ion-view view-title="Dashboard">
+  <ion-content class="padding">
+    <h2>Welcome to Ionic</h2>
+	<body>
+		<div id="loadExternalURL" onload="window.open('http://localhost:8000/login', '_self'); return false;">External Url Loads here</div>
+	</body>
+  </ion-content>
+</ion-view>
