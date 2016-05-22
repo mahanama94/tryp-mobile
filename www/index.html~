@@ -30,7 +30,7 @@
     <ion-view title="Test Page">
     <ion-content>
         <div class="list">
-            <a class="item" href="#" onclick="window.open('http://www.nraboy.com/contact', '_system', 'location=yes'); return false;">
+            <a class="item" href="#" onclick="window.open('http://localhost:8000/', '_self'); return false;">
                 Open a Browser
             </a>
             <a class="item" href="#" onclick="window.open('http://www.twitter.com/nraboy', '_system', 'location=yes'); return false;">
