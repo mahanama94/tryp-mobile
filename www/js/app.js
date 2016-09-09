@@ -3,15 +3,30 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+var app = angular.module('starter', ['ionic', 'controllers', 'services']);
 
-.run(function($ionicPlatform) {
+var auth = {
+      checkParam: ['$state','$rootScope', function($state, $rootScope){
+          if(!$rootScope.loggedIn){
+            $state.go('app.login');
+          }
+        }]
+      }
+
+var guest = {
+    checkParam: ['$state', '$rootScope', function($state, $rootScope){
+      if($rootScope.loggedIn){
+        $state.go('app.home');
+      }
+    }]
+}
+
+app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+    if (window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);
 
@@ -21,65 +36,71 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       StatusBar.styleDefault();
     }
   });
+});
+
+app.run(function($rootScope){
+  $rootScope.loggedIn = false;
+  console.log($rootScope.loggedIn);
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
-
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
+app.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
-
-  // setup an abstract state for the tabs directive
-    .state('tab', {
-    url: '/tab',
+  
+  .state('app', {
+    url: '/app',
     abstract: true,
-    templateUrl: 'templates/tabs.html'
+    templateUrl: 'templates/menu.html',
+    controller: 'AppCtrl'
   })
 
-  // Each tab has its own nav history stack:
-
-  .state('tab.dash', {
-    url: '/dash',
+  .state('app.signup', {
+    resolve: guest,
+    url: '/signup',
     views: {
-      'tab-dash': {
-        templateUrl: 'templates/test.html',
-        controller: 'DashCtrl'
+      'menuContent': {
+        templateUrl: 'templates/auth/signup.html'
       }
     }
   })
 
-  .state('tab.chats', {
-      url: '/chats',
+  .state('app.login', {
+      resolve: guest,
+      url: '/login',
       views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
-          controller: 'ChatsCtrl'
-        }
-      }
-    })
-    .state('tab.chat-detail', {
-      url: '/chats/:chatId',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
+        'menuContent': {
+          templateUrl: 'templates/auth/login.html'
         }
       }
     })
 
-  .state('tab.account', {
-    url: '/account',
+    .state('app.user', {
+      resolve: auth,
+      url: '/user',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/user/index.html',
+        }
+      }
+    })
+    .state('app.home', {
+      resolve: auth,
+      url :'/home', 
+      views: {
+        'menuContent':{
+          templateUrl: 'templates/home.html', 
+        }
+      }
+    })
+
+  .state('app.single', {
+    url: '/playlists/:playlistId',
     views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
+      'menuContent': {
+        templateUrl: 'templates/playlist.html',
+        controller: 'PlaylistCtrl'
       }
     }
   });
-
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
-
+  $urlRouterProvider.otherwise('/app/login');
 });
